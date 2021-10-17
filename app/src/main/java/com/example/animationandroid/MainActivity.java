@@ -15,6 +15,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.Image;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -33,6 +34,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     Bitmap bearcat;
     float x,y = 0;
     int max = 800;
+    int count = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +59,16 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         view.resume();
     }
 
+    public static Bitmap scaleUp(Bitmap img, float maxSize,boolean fltr){
+        float ratio = Math.min(
+                (float) maxSize / img.getWidth(),
+                (float) maxSize / img.getHeight());
+        int width = Math.round((float) ratio * img.getWidth());
+        int height = Math.round((float) ratio * img.getHeight());
+
+        Bitmap newBit = Bitmap.createScaledBitmap(img,width,height,fltr);
+        return newBit;
+    }
 
     @Override
     public boolean onTouch(android.view.View v, MotionEvent event) {
@@ -69,6 +82,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             case MotionEvent.ACTION_DOWN:
 
                 onPause();
+                count -=10;
+                Bitmap scaledbearcat = scaleUp(bearcat,200-count,true);
                 Canvas canvas = view.sHolder.lockCanvas();
                 Rect rect = new Rect();
                 rect.set(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -76,7 +91,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 color.setColor(Color.WHITE);
                 color.setStyle(Paint.Style.FILL);
                 canvas.drawRect(rect, color);
-                canvas.drawBitmap(bearcat, x, y, color);
+                canvas.drawBitmap(scaledbearcat, x, y, color);
 
                 view.sHolder.unlockCanvasAndPost(canvas);
                 
@@ -121,11 +136,13 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                         Random rand = new Random();
                         x = rand.nextFloat() * max;
                     }
+
                     Paint color = new Paint();
                     color.setColor(Color.BLACK);
                     color.setStyle(Paint.Style.FILL);
                     canvas.drawRect(rect, color);
-                    canvas.drawBitmap(bu, x, y, color);
+                    Bitmap scaledbu = scaleUp(bu,200-count,true);
+                    canvas.drawBitmap(scaledbu, x, y, color);
                     sHolder.unlockCanvasAndPost(canvas);
                 }
 
