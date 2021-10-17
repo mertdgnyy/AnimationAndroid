@@ -49,12 +49,12 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
     @Override
     protected void onPause() {
-        super.onPause();
+        super.onPause();               //Stopping bitmap to move
         view.pause();
     }
 
     @Override
-    protected void onResume() {
+    protected void onResume() {         //Starting bitmap move again
         super.onResume();
         view.resume();
     }
@@ -70,14 +70,17 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         return newBit;
     }
 
+
+
+    //This is the part that if user clicks the screen bitmap freezes, and if release clicking,
+    // canvas color changes to white, bitmap image changes to bearcat, and everytime user clicks it
+    //bitmapsize increases with the 200-count size, count is decreasing 10 by each click.
+
     @Override
     public boolean onTouch(android.view.View v, MotionEvent event) {
-        // touch event will be implemented
+
         SurfaceHolder sHolder1 = null;
-
         int action = event.getAction();
-
-
         switch (action) {
             case MotionEvent.ACTION_DOWN:
 
@@ -92,17 +95,13 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 color.setStyle(Paint.Style.FILL);
                 canvas.drawRect(rect, color);
                 canvas.drawBitmap(scaledbearcat, x, y, color);
-
                 view.sHolder.unlockCanvasAndPost(canvas);
-                
-
                 break;
 
             case MotionEvent.ACTION_UP:
 
                 onResume();
                 break;
-
          }
         return true;
     }
@@ -110,6 +109,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
 
     public class View extends SurfaceView implements Runnable{
+
+        //creating variables
 
         boolean resume = false;
         Thread thread = null;
@@ -123,6 +124,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         }
 
 
+        //Drawing a black canvas with surfaceview, random movement of x, and y axis implemented here, also BU bitmap size increases here in Bitmap Scaledbu part.
         public void run() {
             while(resume == true){
                 if(sHolder.getSurface().isValid()) {
@@ -145,13 +147,12 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                     canvas.drawBitmap(scaledbu, x, y, color);
                     sHolder.unlockCanvasAndPost(canvas);
                 }
-
             }
         }
 
         public void pause(){
             resume = false;
-        }
+        }    //I access these with onPause and onResume
 
         public void resume(){
             resume = true;
